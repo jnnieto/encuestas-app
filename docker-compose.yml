@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+  back:
+    image: 'encuesta-backend:latest'
+    build: ./encuesta-backend
+    ports:
+      - "8080:8080"
+    container_name: app-encuestas-backend
+    depends_on:
+      - database
+    networks:
+      - encuestasConnection
+
+  database:
+    image: 'postgres:14.1-alpine'
+    ports:
+      - "5433:5432"
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=encuesta_db
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+networks:
+  encuestasConnection:
+    driver: bridge
+    ipam:
+      driver: default
+

@@ -6,9 +6,9 @@ spring:
   # Database
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/encuesta_db
+    url: jdbc:postgresql://database:5432/encuesta_db
     username: postgres
-    password: 0609
+    password: postgres
   # JPA properties
   jpa:
     hibernate:
@@ -16,3 +16,5 @@ spring:
     database: postgresql
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+token-secret: w014qg7qHAXPw@*p!xZ%W*vLG
