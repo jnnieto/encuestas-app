@@ -1,8 +1,25 @@
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes
+} from "react-router-dom"
+import AuthProvider from "./context/authContext"
+import Home from "./pages/Home"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+
 function App() {
   return (
-    <div className="text-center text-3xl bg-slate-900 text-white py-10">
-      Aplicacion de encuestas en REACT
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />}/>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />}/>
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 

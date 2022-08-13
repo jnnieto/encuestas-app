@@ -6,9 +6,9 @@ spring:
   # Database
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://database:5432/encuesta_db
+    url: jdbc:postgresql://localhost:5432/encuesta_db
     username: postgres
-    password: postgres
+    password: 0609
   # JPA properties
   jpa:
     hibernate:
