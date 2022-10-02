@@ -1,4 +1,4 @@
-import { Field, Form, Formik } from "formik";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useState } from "react";
 import * as Yup from "yup";
 import FormError from "../components/FormError";
@@ -50,7 +50,9 @@ const Login = () => {
         token
       })
     } catch (error: any) {
-      setError(error.response.data.errors.email);
+      if (error.response) {
+        error.response.status === 400 && setError(error.response.data.errors.email);
+      }
       setShowAlert(true);
     } finally {
       setLoading(false);

@@ -1,23 +1,32 @@
 import {
   BrowserRouter as Router,
   Route,
-  Link,
   Routes
 } from "react-router-dom"
+import Navigation from "./components/Navigation"
 import AuthProvider from "./context/authContext"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import User from "./pages/User"
+import GuestRoute from "./router/GuestRoute"
+import PrivateRoute from "./router/PrivateRoute"
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<Home />}/>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />}/>
-        </Routes>
+        <Navigation />
+          <Routes>
+            <Route element={<GuestRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />}/>
+            </Route>
+            <Route path="/" element={<Home />}/>
+            <Route element={<PrivateRoute />}>
+              <Route element={<User />} path="/user"/>
+            </Route>
+          </Routes>
       </Router>
     </AuthProvider>
   )

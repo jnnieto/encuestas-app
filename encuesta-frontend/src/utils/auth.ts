@@ -13,7 +13,7 @@ const setToken = (token: string) => {
     localStorage.setItem(TOKEN_KEY, token);
 }
 
-const getToken = () => {
+const getToken = () => {    
     return localStorage.getItem(TOKEN_KEY) || "";
 }
 
@@ -28,7 +28,7 @@ export const authenticate = (token?: string): User => {
 
     const _token = token ? token : getToken();
 
-    if (!token) {
+    if (!_token) {
         return {...defaultUser};
     }
 

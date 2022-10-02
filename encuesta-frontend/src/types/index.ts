@@ -8,6 +8,6 @@ export type RouteType = "PRIVATE" | "PUBLIC" | "GUEST";
 
 export type Route = {
     path: string,
-    component: any,
+    element: any,
     routeType: RouteType
 }
