@@ -8,8 +8,8 @@ import com.jnnieto.encuestas.springboot.app.models.responses.ValidationErrors;
 import com.jnnieto.encuestas.springboot.app.repositories.UserRepository;
 import com.jnnieto.encuestas.springboot.app.services.UserService;
 import com.jnnieto.encuestas.springboot.app.utils.TestUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +38,7 @@ public class UserControllerTests {
     @Autowired
     UserRepository userRepository;
 
-    @BeforeEach
+    @AfterEach
     public void cleanup() {
         userRepository.deleteAll();
     }
