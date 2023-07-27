@@ -1,12 +1,15 @@
 package com.jnnieto.encuestas.springboot.app.poll;
 
 import com.jnnieto.encuestas.springboot.app.entities.PollEntity;
+import com.jnnieto.encuestas.springboot.app.entities.UserEntity;
 import com.jnnieto.encuestas.springboot.app.models.requests.PollCreationRequestModel;
 import com.jnnieto.encuestas.springboot.app.models.requests.UserLoginRequestModel;
 import com.jnnieto.encuestas.springboot.app.models.requests.UserRegisterRequestModel;
+import com.jnnieto.encuestas.springboot.app.models.responses.PollRest;
 import com.jnnieto.encuestas.springboot.app.models.responses.ValidationErrors;
 import com.jnnieto.encuestas.springboot.app.repositories.PollRepository;
 import com.jnnieto.encuestas.springboot.app.repositories.UserRepository;
+import com.jnnieto.encuestas.springboot.app.services.PollService;
 import com.jnnieto.encuestas.springboot.app.services.UserService;
 import com.jnnieto.encuestas.springboot.app.utils.TestUtil;
 import org.junit.jupiter.api.*;
@@ -30,6 +33,8 @@ public class PollControllerTests {
 
     private String token = "";
 
+    private UserEntity user = null;
+
     @Autowired
     TestRestTemplate testRestTemplate;
 
@@ -42,11 +47,14 @@ public class PollControllerTests {
     @Autowired
     PollRepository pollRepository;
 
+    @Autowired
+    PollService pollService;
+
     @BeforeAll
     public void initializeObjects() {
         // Se crea un usuario aleatorio en base de datos
         UserRegisterRequestModel user = TestUtil.createValidUser();
-        userService.createUser(user);
+        this.user = userService.createUser(user);
         //Se envia el usuario que está en base de datos
         // para comparlo en el test
         UserLoginRequestModel model = new UserLoginRequestModel();
@@ -76,13 +84,13 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithoutData_ReturnBadRequest() {
+    public void createPoll_WithAuthWithoutData_ReturnBadRequest() {
         ResponseEntity<ValidationErrors> response = createPoll(new PollCreationRequestModel(), new ParameterizedTypeReference<ValidationErrors>(){});
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    public void createPoll_WitAuthWithoutContentPoll_ReturnBadRequest() {
+    public void createPoll_WithAuthWithoutContentPoll_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.setContent("");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -90,7 +98,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithoutContentPoll_ReturnValidationErrorToContent() {
+    public void createPoll_WithAuthWithoutContentPoll_ReturnValidationErrorToContent() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.setContent("");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -98,7 +106,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithoutQuestionsToPoll_ReturnBadRequest() {
+    public void createPoll_WithAuthWithoutQuestionsToPoll_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.setQuestions(null);
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -106,7 +114,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithoutQuestionsToPoll_ReturnValidationErrorToAnswers() {
+    public void createPoll_WithAuthWithoutQuestionsToPoll_ReturnValidationErrorToAnswers() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.setQuestions(null);
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>() {
@@ -115,7 +123,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithoutContent_ReturnBadRequest() {
+    public void createPoll_WithAuthWithValidQuestionsWithoutContent_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setContent("");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -123,7 +131,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithoutContent_ReturnValidationErrorToContentAnswer() {
+    public void createPoll_WithAuthWithValidQuestionsWithoutContent_ReturnValidationErrorToContentAnswer() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setContent("");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -131,7 +139,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithBadOrder_ReturnBadRequest() {
+    public void createPoll_WithAuthWithValidQuestionsWithBadOrder_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setQuestionOrder(0);
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -139,7 +147,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithBadOrder_ReturnValidationErrorToQuestionOrder() {
+    public void createPoll_WithAuthWithValidQuestionsWithBadOrder_ReturnValidationErrorToQuestionOrder() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setQuestionOrder(0);
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -147,7 +155,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithInvalidType_ReturnBadRequest() {
+    public void createPoll_WithAuthWithValidQuestionsWithInvalidType_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setType("HELLO");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -155,7 +163,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithInvalidType_ReturnValidationErrorToQuestionType() {
+    public void createPoll_WithAuthWithValidQuestionsWithInvalidType_ReturnValidationErrorToQuestionType() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setType("HELLO");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -163,7 +171,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithoutAnswers_ReturnBadRequest() {
+    public void createPoll_WithAuthWithValidQuestionsWithoutAnswers_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setAnswers(null);
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -171,7 +179,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithoutAnswers_ReturnValidationErrorToQuestionsList() {
+    public void createPoll_WithAuthWithValidQuestionsWithoutAnswers_ReturnValidationErrorToQuestionsList() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).setAnswers(null);
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -179,7 +187,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithoutAnswersContent_ReturnBadRequest() {
+    public void createPoll_WithAuthWithValidQuestionsWithoutAnswersContent_ReturnBadRequest() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).getAnswers().get(0).setContent("");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -187,7 +195,7 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidQuestionsWithoutAnswersContent_ReturnValidationErrorToContentAnswer() {
+    public void createPoll_WithAuthWithValidQuestionsWithoutAnswersContent_ReturnValidationErrorToContentAnswer() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         poll.getQuestions().get(0).getAnswers().get(0).setContent("");
         ResponseEntity<ValidationErrors> response = createPoll(poll, new ParameterizedTypeReference<ValidationErrors>(){});
@@ -195,14 +203,14 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidPoll_ReturnOk() {
+    public void createPoll_WithAuthWithValidPoll_ReturnOk() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         ResponseEntity<Object> response = createPoll(poll, new ParameterizedTypeReference<Object>(){});
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
-    public void createPoll_WitAuthWithValidPoll_ReturnCreatedPollId() {
+    public void createPoll_WithAuthWithValidPoll_ReturnCreatedPollId() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         ResponseEntity<Map<String, String>> response = createPoll(poll, new ParameterizedTypeReference<Map<String, String>>(){});
         Map<String, String> body = response.getBody();
@@ -210,12 +218,38 @@ public class PollControllerTests {
     }
 
     @Test
-    public void createPoll_WitAuthWithValidPoll_SaveToDatabase() {
+    public void createPoll_WithAuthWithValidPoll_SaveToDatabase() {
         PollCreationRequestModel poll = TestUtil.createValidPoll();
         ResponseEntity<Map<String, String>> response = createPoll(poll, new ParameterizedTypeReference<Map<String, String>>(){});
         Map<String, String> body = response.getBody();
         PollEntity pollDB = pollRepository.findByPollId(body.get("pollId"));
         Assertions.assertNotNull(pollDB);
+    }
+
+    @Test
+    public void getPollWithQuestions_whenThePollDoNotExistsOnDatabase_ReturnNotFound() {
+        ResponseEntity<Object> response = getPollWithQuestions(API_URL + "/uuid/questions", Object.class);
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void getPollWithQuestions_whenThePollExistsOnDatabase_ReturnOk() {
+        PollCreationRequestModel model = TestUtil.createValidPoll();
+        String uuid = pollService.createPoll(model, user.getEmail());
+        ResponseEntity<Object> response = getPollWithQuestions(API_URL + "/" + uuid + "/questions", Object.class);
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+    }
+
+    @Test
+    public void getPollWithQuestions_whenThePollExistsOnDatabase_ReturnPollRest() {
+        PollCreationRequestModel model = TestUtil.createValidPoll();
+        String uuid = pollService.createPoll(model, user.getEmail());
+        ResponseEntity<PollRest> response = getPollWithQuestions(API_URL + "/" + uuid + "/questions", PollRest.class);
+        Assertions.assertEquals(uuid, response.getBody().getPollId());
+    }
+
+    public <T> ResponseEntity<T> getPollWithQuestions(String url, Class<T> responseType) {
+        return testRestTemplate.getForEntity(url, responseType);
     }
 
     public <T> ResponseEntity<T> createPoll(PollCreationRequestModel data, Class<T> responseType) {

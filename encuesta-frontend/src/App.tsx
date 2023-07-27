@@ -5,6 +5,7 @@ import {
 } from "react-router-dom"
 import Navigation from "./components/Navigation"
 import AuthProvider from "./context/authContext"
+import CreatePoll from "./pages/CreatePoll"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -25,6 +26,7 @@ function App() {
             <Route path="/" element={<Home />}/>
             <Route element={<PrivateRoute />}>
               <Route element={<User />} path="/user"/>
+              <Route element={<CreatePoll />} path="/create-poll"/>
             </Route>
           </Routes>
       </Router>

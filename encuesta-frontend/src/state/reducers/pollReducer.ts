@@ -30,6 +30,10 @@ export const pollInitialState: Poll = {
 
 export const PollReducer = produce((state: Poll, action: PollActions): Poll => {
     switch(action.type) {
+        case "pollcontent": {
+            state.content = action.content;
+            return state;
+        }
         default:
             return state;
     }

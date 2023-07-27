@@ -35,6 +35,8 @@ public class WebSecurityConfig {
 
         http.cors().and().csrf().disable();
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users").permitAll()
+                .antMatchers(HttpMethod.GET, "/polls/**/questions").permitAll()
+                .antMatchers(HttpMethod.POST, "/polls/reply").permitAll()
                 .anyRequest().authenticated().and()
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .addFilter(new AuthorizationFilter(authenticationManager))

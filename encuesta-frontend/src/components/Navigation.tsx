@@ -35,7 +35,6 @@ const Navigation = () => {
           <Link to="/" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Inicio
           </Link>
-
         </div>
         <div className="relative inline-block text-left">
           {user.isAuthenticated ? (
@@ -56,6 +55,7 @@ const Navigation = () => {
               <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex={-1}>
                 <div className="py-1" role="none">
                   <Link to="/user" className="text-white hover:text-teal-200 block px-4 py-2 text-sm" role="menuitem" tabIndex={-1} id="menu-item-0">Mis encuestas</Link>
+                  <Link to="/create-poll" className="text-white hover:text-teal-200 block px-4 py-2 text-sm" role="menuitem" tabIndex={-1} id="menu-item-0">Crear encuesta</Link>
                   <form method="POST" action="#" role="none" onSubmit={logout}>
                     <button type="submit" className="text-white hover:text-teal-200 block w-full px-4 py-2 text-left text-sm" role="menuitem" tabIndex={-1} id="menu-item-3">Cerrar sesión</button>
                   </form>

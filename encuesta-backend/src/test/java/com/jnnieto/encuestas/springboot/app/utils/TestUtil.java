@@ -1,11 +1,14 @@
 package com.jnnieto.encuestas.springboot.app.utils;
 
-import com.jnnieto.encuestas.springboot.app.models.requests.AnswerCreationRequestModel;
-import com.jnnieto.encuestas.springboot.app.models.requests.PollCreationRequestModel;
-import com.jnnieto.encuestas.springboot.app.models.requests.QuestionCreationRequestModel;
-import com.jnnieto.encuestas.springboot.app.models.requests.UserRegisterRequestModel;
+import com.jnnieto.encuestas.springboot.app.entities.AnswerEntity;
+import com.jnnieto.encuestas.springboot.app.entities.PollEntity;
+import com.jnnieto.encuestas.springboot.app.entities.QuestionEntity;
+import com.jnnieto.encuestas.springboot.app.entities.UserEntity;
+import com.jnnieto.encuestas.springboot.app.enums.QuestionType;
+import com.jnnieto.encuestas.springboot.app.models.requests.*;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestUtil {
@@ -50,6 +53,50 @@ public class TestUtil {
         poll.setQuestions(questions);
 
         return poll;
+    }
+
+    public static PollEntity createValidPollEntity(UserEntity user) {
+
+        PollEntity poll = new PollEntity();
+        poll.setContent(generateRandomString(16));
+        poll.setOpened(true);
+        poll.setUser(user);
+        poll.setPollId(UUID.randomUUID().toString());
+
+        ArrayList<QuestionEntity> questions = new ArrayList<>();
+        QuestionEntity question = new QuestionEntity();
+        question.setContent(generateRandomString(16));
+        question.setQuestionOrder(1);
+        question.setType(QuestionType.CHECKBOX);
+        question.setPoll(poll);
+        questions.add(question);
+
+
+        ArrayList<AnswerEntity> answers = new ArrayList<>();
+        AnswerEntity answer = new AnswerEntity();
+        answer.setContent(generateRandomString(16));
+        answer.setQuestion(question);
+        answers.add(answer);
+        question.setAnswers(answers);
+        poll.setQuestions(questions);
+
+        return poll;
+    }
+
+    public static PollReplyRequestModel createValidPollReply(PollEntity poll) {
+        ArrayList<PollReplyDetailRequestModel> pollReplies = new ArrayList<>();
+        PollReplyDetailRequestModel reply = new PollReplyDetailRequestModel();
+
+        reply.setQuestionId(poll.getQuestions().get(0).getId());
+        reply.setAnswerId(poll.getQuestions().get(0).getAnswers().get(0).getId());
+        pollReplies.add(reply);
+
+        PollReplyRequestModel model = new PollReplyRequestModel();
+        model.setUserName(generateRandomString(8));
+        model.setPoll(poll.getId());
+        model.setPollReplies(pollReplies);
+
+        return model;
     }
 
     /**
